@@ -7,7 +7,7 @@ Summary: 	PECL A zip management extension
 Summary(fr): 	PECL Une extension de gestion des ZIP
 Name: 		php-pecl-zip
 Version: 	1.7.2
-Release: 	1%{?dist}
+Release: 	2%{?dist}
 License: 	PHP License
 Group: 		Development/Languages
 URL: 		http://pecl.php.net/package/zip
@@ -55,6 +55,9 @@ EOF
 %{php_extdir}/zip.so
 
 %changelog
+* Mon Aug 28 2006 Remi Collet <Fedora@FamilleCollet.com> 1.7.2-2
+- rebuild for FE6
+
 * Sun Aug 27 2006 Remi Collet <Fedora@FamilleCollet.com> 1.7.2-1
 - update to 1.7.2
 
