@@ -3,20 +3,22 @@
 %global php_version %(php-config --version 2>/dev/null || echo 0)
 
 
-Summary: 	PECL A zip management extension
-Summary(fr): 	PECL Une extension de gestion des ZIP
-Name: 		php-pecl-zip
-Version: 	1.7.2
-Release: 	2%{?dist}
-License: 	PHP License
-Group: 		Development/Languages
-URL: 		http://pecl.php.net/package/zip
-Source: 	http://pecl.php.net/get/zip-%{version}.tgz
-Source1:	PHP-LICENSE-3.01
-BuildRoot: 	%{_tmppath}/%{name}-%{version}-%{release}-root-%(%{__id_u} -n)
-Provides: 	php-pecl(zip) = %{version}-%{release}, php-zip = %{version}-%{release}
-Requires: 	php-api >= %{php_apiver}
-BuildRequires: 	php-devel, zlib-devel
+Summary:      A zip management extension
+Summary(fr):  Une extension de gestion des ZIP
+Name:         php-pecl-zip
+Version:      1.7.3
+Release:      1%{?dist}
+License:      PHP License
+Group:        Development/Languages
+URL:          http://pecl.php.net/package/zip
+
+Source:       http://pecl.php.net/get/zip-%{version}.tgz
+Source1:      PHP-LICENSE-3.01
+Source2:      xml2changelog
+BuildRoot:    %{_tmppath}/%{name}-%{version}-%{release}-root-%(%{__id_u} -n)
+Provides:     php-pecl(zip) = %{version}-%{release}, php-zip = %{version}-%{release}
+Requires:     php-api >= %{php_apiver}
+BuildRequires: php-devel, zlib-devel
 
 %description
 Zip is an extension to create and read zip files.
@@ -25,16 +27,19 @@ Zip is an extension to create and read zip files.
 Zip est une extension pour créer et lire les archives au format ZIP.
 
 %prep 
-%setup -q -n zip-%{version}
+%setup -c -q
 
+%{_bindir}/php -n %{SOURCE2} package.xml >CHANGELOG
 %{__install} -m 644 -c %{SOURCE1} LICENSE
 
 %build
+cd zip-%{version}
 phpize
 %configure
 %{__make} %{?_smp_mflags}
 
 %install
+cd zip-%{version}
 %{__rm} -rf %{buildroot}
 %{__make} install INSTALL_ROOT=%{buildroot}
 
@@ -50,11 +55,17 @@ EOF
 
 %files
 %defattr(-, root, root, -)
-%doc LICENSE CREDITS examples
+%doc LICENSE CHANGELOG zip-%{version}/CREDITS zip-%{version}/examples
 %config(noreplace) %{_sysconfdir}/php.d/zip.ini
 %{php_extdir}/zip.so
 
 %changelog
+* Sun Sep 17 2006 Remi Collet <Fedora@FamilleCollet.com> 1.7.3-1
+- update to 1.7.3
+- remove PECL from sumnary
+- change to %%setup -c -q
+- add generated CHANGELOG to %%doc
+
 * Mon Aug 28 2006 Remi Collet <Fedora@FamilleCollet.com> 1.7.2-2
 - rebuild for FE6
 
