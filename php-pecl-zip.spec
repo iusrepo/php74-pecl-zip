@@ -7,39 +7,21 @@
 # Please, preserve the changelog entries
 #
 %global pecl_name      zip
-%if 0%{?fedora} >= 20
-%global with_libzip    1
-%else
-%global with_libzip    0
-%endif
 %global with_zts       0%{?__ztsphp:1}
 
 Summary:      A ZIP archive management extension
 Summary(fr):  Une extension de gestion des ZIP
 Name:         php-pecl-zip
-Version:      1.12.1
-Release:      5%{?dist}
-%if %{with_libzip}
+Version:      1.12.2
+Release:      1%{?dist}
 License:      PHP
-%else
-# Zip extension is PHP, Libzip library is BSD
-License:      PHP and BSD
-%endif
 Group:        Development/Languages
 URL:          http://pecl.php.net/package/zip
 
 Source:       http://pecl.php.net/get/%{pecl_name}-%{version}.tgz
 
-# https://github.com/pierrejoye/php_zip/pull/3 (merged)
-# Cleanups and fix build warnings
-Patch0:       zip-git.patch
-# use system libzip 0.11 instead of bundled copy
-Patch1:       zip-systemlibzip.patch
-
 BuildRequires: php-devel
-%if %{with_libzip}
 BuildRequires: pkgconfig(libzip) >= 0.11.1
-%endif
 BuildRequires: zlib-devel
 BuildRequires: php-pear
 
@@ -52,10 +34,6 @@ Provides:     php-pecl(%{pecl_name}) = %{version}
 Provides:     php-pecl(%{pecl_name})%{?_isa} = %{version}
 Provides:     php-%{pecl_name} = %{version}-%{release}
 Provides:     php-%{pecl_name}%{?_isa} = %{version}-%{release}
-
-# Filter private shared
-%{?filter_provides_in: %filter_provides_in %{_libdir}/.*\.so$}
-%{?filter_setup}
 
 
 %description
@@ -70,16 +48,8 @@ Zip est une extension pour créer et lire les archives au format ZIP.
 
 cd %{pecl_name}-%{version}
 
-%patch0 -p1 -b .git
-
-%if %{with_libzip}
-%patch1 -p1 -b .systemlibzip
 # delete bundled libzip to ensure it is not used (except zipint.h)
 rm lib/*.c
-%endif
-
-# make rpmlint happy (fixed in upstream git)
-find . -type f -exec chmod -x {} \;
 
 cd ..
 : Create the configuration file
@@ -95,14 +65,11 @@ cp -pr %{pecl_name}-%{version} %{pecl_name}-zts
 
 
 %build
-export PHP_RPATH=no
-
 cd %{pecl_name}-%{version}
 %{_bindir}/phpize
 %configure \
-%if %{with_libzip}
   --with-libzip \
-%endif
+  --with-libdir=%{_lib} \
   --with-php-config=%{_bindir}/php-config
 
 make %{?_smp_mflags}
@@ -111,9 +78,8 @@ make %{?_smp_mflags}
 cd ../%{pecl_name}-zts
 %{_bindir}/zts-phpize
 %configure \
-%if %{with_libzip}
   --with-libzip \
-%endif
+  --with-libdir=%{_lib} \
   --with-php-config=%{_bindir}/zts-php-config
 
 make %{?_smp_mflags}
@@ -131,6 +97,15 @@ install -D -m 644 package.xml %{buildroot}%{pecl_xmldir}/%{name}.xml
 make -C %{pecl_name}-zts install INSTALL_ROOT=%{buildroot}
 install -D -m 644 %{pecl_name}.ini %{buildroot}%{php_ztsinidir}/%{pecl_name}.ini
 %endif
+
+# Test & Documentation
+cd %{pecl_name}-%{version}
+for i in $(grep 'role="test"' ../package.xml | sed -e 's/^.*name="//;s/".*$//')
+do install -Dpm 644 $i %{buildroot}%{pecl_testdir}/%{pecl_name}/$i
+done
+for i in $(grep 'role="doc"' ../package.xml | sed -e 's/^.*name="//;s/".*$//')
+do install -Dpm 644 $i %{buildroot}%{pecl_docdir}/%{pecl_name}/$i
+done
 
 
 %check
@@ -162,7 +137,7 @@ TEST_PHP_ARGS="-n -d extension_dir=$PWD/modules -d extension=%{pecl_name}.so" \
 REPORT_EXIT_STATUS=1 \
 NO_INTERACTION=1 \
 TEST_PHP_EXECUTABLE=%{_bindir}/zts-php \
-%{_bindir}/php \
+%{_bindir}/zts-php \
    run-tests.php
 %endif
 
@@ -178,8 +153,8 @@ fi
 
 
 %files
-%doc %{pecl_name}-%{version}/{CREDITS,LICENSE}
-%doc %{pecl_name}-%{version}/examples
+%doc %{pecl_docdir}/%{pecl_name}
+%doc %{pecl_testdir}/%{pecl_name}
 %{pecl_xmldir}/%{name}.xml
 %config(noreplace) %{php_inidir}/%{pecl_name}.ini
 %{php_extdir}/%{pecl_name}.so
@@ -191,6 +166,12 @@ fi
 
 
 %changelog
+* Wed Oct 23 2013 Remi Collet <remi@fedoraproject.org> 1.12.2-1
+- update to 1.12.2
+- drop merged patches
+- install doc in pecl doc_dir
+- install tests in pecl test_dir
+
 * Thu Aug 22 2013 Remi Collet <rcollet@redhat.com> 1.12.1-5
 - really really fix all spurious-executable-perm
 
