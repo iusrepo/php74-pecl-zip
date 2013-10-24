@@ -7,18 +7,19 @@
 # Please, preserve the changelog entries
 #
 %global pecl_name      zip
-%global with_zts       0%{?__ztsphp:1}
 
 Summary:      A ZIP archive management extension
 Summary(fr):  Une extension de gestion des ZIP
 Name:         php-pecl-zip
 Version:      1.12.2
-Release:      1%{?dist}
+Release:      2%{?dist}
 License:      PHP
 Group:        Development/Languages
 URL:          http://pecl.php.net/package/zip
 
 Source:       http://pecl.php.net/get/%{pecl_name}-%{version}.tgz
+
+Patch0:        %{pecl_name}-upstream.patch
 
 BuildRequires: php-devel
 BuildRequires: pkgconfig(libzip) >= 0.11.1
@@ -47,9 +48,11 @@ Zip est une extension pour créer et lire les archives au format ZIP.
 %setup -c -q
 
 cd %{pecl_name}-%{version}
+%patch0 -p1
 
-# delete bundled libzip to ensure it is not used (except zipint.h)
-rm lib/*.c
+sed -e '/LICENSE_libzip/d' -i ../package.xml
+# delete bundled libzip to ensure it is not used
+rm -r lib
 
 cd ..
 : Create the configuration file
@@ -58,10 +61,8 @@ cat >%{pecl_name}.ini << 'EOF'
 extension=%{pecl_name}.so
 EOF
 
-%if %{with_zts}
 : Duplicate sources tree for ZTS build
 cp -pr %{pecl_name}-%{version} %{pecl_name}-zts
-%endif
 
 
 %build
@@ -74,7 +75,6 @@ cd %{pecl_name}-%{version}
 
 make %{?_smp_mflags}
 
-%if %{with_zts}
 cd ../%{pecl_name}-zts
 %{_bindir}/zts-phpize
 %configure \
@@ -83,7 +83,6 @@ cd ../%{pecl_name}-zts
   --with-php-config=%{_bindir}/zts-php-config
 
 make %{?_smp_mflags}
-%endif
 
 
 %install
@@ -93,10 +92,8 @@ install -D -m 644 %{pecl_name}.ini %{buildroot}%{php_inidir}/%{pecl_name}.ini
 # Install XML package description
 install -D -m 644 package.xml %{buildroot}%{pecl_xmldir}/%{name}.xml
 
-%if %{with_zts}
 make -C %{pecl_name}-zts install INSTALL_ROOT=%{buildroot}
 install -D -m 644 %{pecl_name}.ini %{buildroot}%{php_ztsinidir}/%{pecl_name}.ini
-%endif
 
 # Test & Documentation
 cd %{pecl_name}-%{version}
@@ -124,7 +121,6 @@ TEST_PHP_EXECUTABLE=%{_bindir}/php \
 %{_bindir}/php \
    run-tests.php
 
-%if %{with_zts}
 cd ../%{pecl_name}-zts
 : minimal load test of ZTS extension
 %{_bindir}/zts-php --no-php-ini \
@@ -139,7 +135,6 @@ NO_INTERACTION=1 \
 TEST_PHP_EXECUTABLE=%{_bindir}/zts-php \
 %{_bindir}/zts-php \
    run-tests.php
-%endif
 
 
 %post
@@ -159,13 +154,16 @@ fi
 %config(noreplace) %{php_inidir}/%{pecl_name}.ini
 %{php_extdir}/%{pecl_name}.so
 
-%if %{with_zts}
 %config(noreplace) %{php_ztsinidir}/%{pecl_name}.ini
 %{php_ztsextdir}/%{pecl_name}.so
-%endif
 
 
 %changelog
+* Thu Oct 24 2013 Remi Collet <remi@fedoraproject.org> 1.12.2-2
+- upstream patch, don't use any libzip private struct
+- drop LICENSE_libzip when system version is used
+- always build ZTS extension
+
 * Wed Oct 23 2013 Remi Collet <remi@fedoraproject.org> 1.12.2-1
 - update to 1.12.2
 - drop merged patches
