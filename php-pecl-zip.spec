@@ -11,15 +11,13 @@
 Summary:      A ZIP archive management extension
 Summary(fr):  Une extension de gestion des ZIP
 Name:         php-pecl-zip
-Version:      1.12.2
-Release:      2%{?dist}
+Version:      1.12.3
+Release:      1%{?dist}
 License:      PHP
 Group:        Development/Languages
 URL:          http://pecl.php.net/package/zip
 
 Source:       http://pecl.php.net/get/%{pecl_name}-%{version}.tgz
-
-Patch0:        %{pecl_name}-upstream.patch
 
 BuildRequires: php-devel
 BuildRequires: pkgconfig(libzip) >= 0.11.1
@@ -48,7 +46,6 @@ Zip est une extension pour créer et lire les archives au format ZIP.
 %setup -c -q
 
 cd %{pecl_name}-%{version}
-%patch0 -p1
 
 sed -e '/LICENSE_libzip/d' -i ../package.xml
 # delete bundled libzip to ensure it is not used
@@ -159,6 +156,10 @@ fi
 
 
 %changelog
+* Thu Dec 12 2013 Remi Collet <remi@fedoraproject.org> - 1.12.3-1
+- Update to 1.12.3 (stable)
+- drop merged patch
+
 * Thu Oct 24 2013 Remi Collet <remi@fedoraproject.org> 1.12.2-2
 - upstream patch, don't use any libzip private struct
 - drop LICENSE_libzip when system version is used
