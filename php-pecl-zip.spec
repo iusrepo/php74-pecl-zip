@@ -1,6 +1,6 @@
 # spec file for php-pecl-zip
 #
-# Copyright (c) 2013 Remi Collet
+# Copyright (c) 2013-2014 Remi Collet
 # License: CC-BY-SA
 # http://creativecommons.org/licenses/by-sa/3.0/
 #
@@ -11,7 +11,7 @@
 Summary:      A ZIP archive management extension
 Summary(fr):  Une extension de gestion des ZIP
 Name:         php-pecl-zip
-Version:      1.12.3
+Version:      1.12.4
 Release:      1%{?dist}
 License:      PHP
 Group:        Development/Languages
@@ -156,6 +156,9 @@ fi
 
 
 %changelog
+* Wed Jan 29 2014 Remi Collet <remi@fedoraproject.org> - 1.12.4-1
+- Update to 1.12.4 (stable) for libzip 0.11.2
+
 * Thu Dec 12 2013 Remi Collet <remi@fedoraproject.org> - 1.12.3-1
 - Update to 1.12.3 (stable)
 - drop merged patch
@@ -166,7 +169,7 @@ fi
 - always build ZTS extension
 
 * Wed Oct 23 2013 Remi Collet <remi@fedoraproject.org> 1.12.2-1
-- update to 1.12.2
+- update to 1.12.2 (beta)
 - drop merged patches
 - install doc in pecl doc_dir
 - install tests in pecl test_dir
@@ -186,4 +189,4 @@ fi
 - refresh our merged patches from upstream git
 
 * Thu Aug 08 2013 Remi Collet <rcollet@redhat.com> 1.12.1-1
-- New spec for version 1.12.1
+- New spec for version 1.12.1 (beta)
