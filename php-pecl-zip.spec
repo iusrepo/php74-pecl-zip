@@ -7,12 +7,17 @@
 # Please, preserve the changelog entries
 #
 %global pecl_name      zip
+%if 0%{?fedora} < 21
+%global ini_name  %{pecl_name}.ini
+%else
+%global ini_name  40-%{pecl_name}.ini
+%endif
 
 Summary:      A ZIP archive management extension
 Summary(fr):  Une extension de gestion des ZIP
 Name:         php-pecl-zip
 Version:      1.12.4
-Release:      1%{?dist}
+Release:      2%{?dist}
 License:      PHP
 Group:        Development/Languages
 URL:          http://pecl.php.net/package/zip
@@ -53,7 +58,7 @@ rm -r lib
 
 cd ..
 : Create the configuration file
-cat >%{pecl_name}.ini << 'EOF'
+cat >%{ini_name} << 'EOF'
 ; Enable ZIP extension module
 extension=%{pecl_name}.so
 EOF
@@ -84,13 +89,13 @@ make %{?_smp_mflags}
 
 %install
 make -C %{pecl_name}-%{version} install INSTALL_ROOT=%{buildroot}
-install -D -m 644 %{pecl_name}.ini %{buildroot}%{php_inidir}/%{pecl_name}.ini
+install -D -m 644 %{ini_name} %{buildroot}%{php_inidir}/%{ini_name}
 
 # Install XML package description
 install -D -m 644 package.xml %{buildroot}%{pecl_xmldir}/%{name}.xml
 
 make -C %{pecl_name}-zts install INSTALL_ROOT=%{buildroot}
-install -D -m 644 %{pecl_name}.ini %{buildroot}%{php_ztsinidir}/%{pecl_name}.ini
+install -D -m 644 %{ini_name} %{buildroot}%{php_ztsinidir}/%{ini_name}
 
 # Test & Documentation
 cd %{pecl_name}-%{version}
@@ -148,14 +153,17 @@ fi
 %doc %{pecl_docdir}/%{pecl_name}
 %doc %{pecl_testdir}/%{pecl_name}
 %{pecl_xmldir}/%{name}.xml
-%config(noreplace) %{php_inidir}/%{pecl_name}.ini
+%config(noreplace) %{php_inidir}/%{ini_name}
 %{php_extdir}/%{pecl_name}.so
 
-%config(noreplace) %{php_ztsinidir}/%{pecl_name}.ini
+%config(noreplace) %{php_ztsinidir}/%{ini_name}
 %{php_ztsextdir}/%{pecl_name}.so
 
 
 %changelog
+* Thu Apr 24 2014 Remi Collet <rcollet@redhat.com> - 1.12.4-2
+- add numerical prefix to extension configuration file
+
 * Wed Jan 29 2014 Remi Collet <remi@fedoraproject.org> - 1.12.4-1
 - Update to 1.12.4 (stable) for libzip 0.11.2
 
