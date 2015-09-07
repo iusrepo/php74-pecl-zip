@@ -1,4 +1,4 @@
-# spec file for php-pecl-zip
+# Fedora spec file for php-pecl-zip
 #
 # Copyright (c) 2013-2015 Remi Collet
 # License: CC-BY-SA
@@ -16,8 +16,8 @@
 Summary:      A ZIP archive management extension
 Summary(fr):  Une extension de gestion des ZIP
 Name:         php-pecl-zip
-Version:      1.12.5
-Release:      3%{?dist}
+Version:      1.13.0
+Release:      1%{?dist}
 License:      PHP
 Group:        Development/Languages
 URL:          http://pecl.php.net/package/zip
@@ -25,7 +25,7 @@ URL:          http://pecl.php.net/package/zip
 Source:       http://pecl.php.net/get/%{pecl_name}-%{version}.tgz
 
 BuildRequires: php-devel
-BuildRequires: pkgconfig(libzip) >= 0.11.1
+BuildRequires: pkgconfig(libzip) >= 1.0.0
 BuildRequires: zlib-devel
 BuildRequires: php-pear
 
@@ -50,7 +50,17 @@ Zip est une extension pour créer et lire les archives au format ZIP.
 %prep 
 %setup -c -q
 
+# Don't install/register tests
+sed -e 's/role="test"/role="src"/' -i package.xml
+
 cd %{pecl_name}-%{version}
+
+# Sanity check, really often broken
+extver=$(sed -n '/#define PHP_ZIP_VERSION/{s/.* "//;s/".*$//;p}' php5/php_zip.h)
+if test "x${extver}" != "x%{version}%{?prever}"; then
+   : Error: Upstream extension version is ${extver}, expecting %{version}%{?prever}.
+   exit 1
+fi
 
 sed -e '/LICENSE_libzip/d' -i ../package.xml
 # delete bundled libzip to ensure it is not used
@@ -97,11 +107,8 @@ install -D -m 644 package.xml %{buildroot}%{pecl_xmldir}/%{name}.xml
 make -C %{pecl_name}-zts install INSTALL_ROOT=%{buildroot}
 install -D -m 644 %{ini_name} %{buildroot}%{php_ztsinidir}/%{ini_name}
 
-# Test & Documentation
+# Documentation
 cd %{pecl_name}-%{version}
-for i in $(grep 'role="test"' ../package.xml | sed -e 's/^.*name="//;s/".*$//')
-do install -Dpm 644 $i %{buildroot}%{pecl_testdir}/%{pecl_name}/$i
-done
 for i in $(grep 'role="doc"' ../package.xml | sed -e 's/^.*name="//;s/".*$//')
 do install -Dpm 644 $i %{buildroot}%{pecl_docdir}/%{pecl_name}/$i
 done
@@ -151,8 +158,8 @@ fi
 
 %files
 %doc %{pecl_docdir}/%{pecl_name}
-%doc %{pecl_testdir}/%{pecl_name}
 %{pecl_xmldir}/%{name}.xml
+
 %config(noreplace) %{php_inidir}/%{ini_name}
 %{php_extdir}/%{pecl_name}.so
 
@@ -161,6 +168,11 @@ fi
 
 
 %changelog
+* Mon Sep  7 2015 Remi Collet <remi@fedoraproject.org> - 1.13.0-1
+- Update to 1.13.0
+- raise dependency on libzip 1.0.0
+- don't install/register tests
+
 * Thu Jun 18 2015 Fedora Release Engineering <rel-eng@lists.fedoraproject.org> - 1.12.5-3
 - Rebuilt for https://fedoraproject.org/wiki/Fedora_23_Mass_Rebuild
 
