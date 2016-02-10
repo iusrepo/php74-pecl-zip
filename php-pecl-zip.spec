@@ -17,7 +17,7 @@ Summary:      A ZIP archive management extension
 Summary(fr):  Une extension de gestion des ZIP
 Name:         php-pecl-zip
 Version:      1.13.1
-Release:      2%{?dist}
+Release:      3%{?dist}
 License:      PHP
 Group:        Development/Languages
 URL:          http://pecl.php.net/package/zip
@@ -29,8 +29,6 @@ BuildRequires: pkgconfig(libzip) >= 1.0.0
 BuildRequires: zlib-devel
 BuildRequires: php-pear
 
-Requires(post): %{_bindir}/pecl
-Requires(postun): %{_bindir}/pecl
 Requires:     php(zend-abi) = %{php_zend_api}
 Requires:     php(api) = %{php_core_api}
 
@@ -115,6 +113,9 @@ done
 
 
 %check
+# Ignore failed test due to change in 5.6.18 (security fix)
+rm %{pecl_name}-*/tests/stream_meta_data.phpt
+
 cd %{pecl_name}-%{version}
 : minimal load test of NTS extension
 %{_bindir}/php --no-php-ini \
@@ -146,16 +147,6 @@ TEST_PHP_EXECUTABLE=%{_bindir}/zts-php \
    run-tests.php
 
 
-%post
-%{pecl_install} %{pecl_xmldir}/%{name}.xml >/dev/null || :
-
-
-%postun
-if [ $1 -eq 0 ] ; then
-    %{pecl_uninstall} %{pecl_name} >/dev/null || :
-fi
-
-
 %files
 %doc %{pecl_docdir}/%{pecl_name}
 %{pecl_xmldir}/%{name}.xml
@@ -168,6 +159,10 @@ fi
 
 
 %changelog
+* Wed Feb 10 2016 Remi Collet <remi@fedoraproject.org> - 1.13.1-3
+- drop scriptlets (replaced file triggers in php-pear)
+- ignore 1 test (change in php, FTBFS detected by Koschei)
+
 * Thu Feb 04 2016 Fedora Release Engineering <releng@fedoraproject.org> - 1.13.1-2
 - Rebuilt for https://fedoraproject.org/wiki/Fedora_24_Mass_Rebuild
 
