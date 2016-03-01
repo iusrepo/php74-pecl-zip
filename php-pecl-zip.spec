@@ -1,23 +1,19 @@
 # Fedora spec file for php-pecl-zip
 #
-# Copyright (c) 2013-2015 Remi Collet
+# Copyright (c) 2013-2016 Remi Collet
 # License: CC-BY-SA
 # http://creativecommons.org/licenses/by-sa/4.0/
 #
 # Please, preserve the changelog entries
 #
-%global pecl_name      zip
-%if "%{php_version}" < "5.6"
-%global ini_name  %{pecl_name}.ini
-%else
+%global pecl_name zip
 %global ini_name  40-%{pecl_name}.ini
-%endif
 
 Summary:      A ZIP archive management extension
 Summary(fr):  Une extension de gestion des ZIP
 Name:         php-pecl-zip
-Version:      1.13.1
-Release:      3%{?dist}
+Version:      1.13.2
+Release:      1%{?dist}
 License:      PHP
 Group:        Development/Languages
 URL:          http://pecl.php.net/package/zip
@@ -49,7 +45,9 @@ Zip est une extension pour créer et lire les archives au format ZIP.
 %setup -c -q
 
 # Don't install/register tests
-sed -e 's/role="test"/role="src"/' -i package.xml
+sed -e 's/role="test"/role="src"/' \
+    %{?_licensedir:-e '/LICENSE/s/role="doc"/role="src"/' } \
+    -i package.xml
 
 cd %{pecl_name}-%{version}
 
@@ -113,9 +111,6 @@ done
 
 
 %check
-# Ignore failed test due to change in 5.6.18 (security fix)
-rm %{pecl_name}-*/tests/stream_meta_data.phpt
-
 cd %{pecl_name}-%{version}
 : minimal load test of NTS extension
 %{_bindir}/php --no-php-ini \
@@ -128,8 +123,7 @@ TEST_PHP_ARGS="-n -d extension_dir=$PWD/modules -d extension=%{pecl_name}.so" \
 REPORT_EXIT_STATUS=1 \
 NO_INTERACTION=1 \
 TEST_PHP_EXECUTABLE=%{_bindir}/php \
-%{_bindir}/php \
-   run-tests.php
+%{_bindir}/php -n run-tests.php
 
 cd ../%{pecl_name}-zts
 : minimal load test of ZTS extension
@@ -143,11 +137,11 @@ TEST_PHP_ARGS="-n -d extension_dir=$PWD/modules -d extension=%{pecl_name}.so" \
 REPORT_EXIT_STATUS=1 \
 NO_INTERACTION=1 \
 TEST_PHP_EXECUTABLE=%{_bindir}/zts-php \
-%{_bindir}/zts-php \
-   run-tests.php
+%{_bindir}/zts-php -n run-tests.php
 
 
 %files
+%license %{pecl_name}-%{version}/LICENSE
 %doc %{pecl_docdir}/%{pecl_name}
 %{pecl_xmldir}/%{name}.xml
 
@@ -159,6 +153,10 @@ TEST_PHP_EXECUTABLE=%{_bindir}/zts-php \
 
 
 %changelog
+* Tue Mar  1 2016 Remi Collet <remi@fedoraproject.org> - 1.13.2-1
+- Update to 1.13.2
+- fix license management
+
 * Wed Feb 10 2016 Remi Collet <remi@fedoraproject.org> - 1.13.1-3
 - drop scriptlets (replaced file triggers in php-pear)
 - ignore 1 test (change in php, FTBFS detected by Koschei)
