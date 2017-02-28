@@ -1,0 +1,20 @@
+From 029f047293f9bb6f871f5f4800a67d692c182592 Mon Sep 17 00:00:00 2001
+From: Remi Collet <fedora@famillecollet.com>
+Date: Sun, 19 Feb 2017 16:59:46 +0100
+Subject: [PATCH] fix test for libzip 1.2.0
+
+---
+ tests/bug70322.phpt | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+
+diff --git a/tests/bug70322.phpt b/tests/bug70322.phpt
+index a9b4915..b089e30 100644
+--- a/tests/bug70322.phpt
++++ b/tests/bug70322.phpt
+@@ -25,5 +25,5 @@ var_dump($zip->close());
+ @unlink(__DIR__ . '/bug70322.zip');
+ ?>
+ --EXPECTF--
+-Warning: ZipArchive::close(): Read error: No such file or directory in %s%ebug70322.php on line %d
++Warning: ZipArchive::close(): %s: No such file or directory in %s%ebug70322.php on line %d
+ bool(false)

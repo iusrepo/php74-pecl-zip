@@ -20,6 +20,8 @@ URL:          http://pecl.php.net/package/zip
 
 Source:       http://pecl.php.net/get/%{pecl_name}-%{version}.tgz
 
+Patch0:       %{pecl_name}-upstream.patch
+
 BuildRequires: php-devel
 BuildRequires: pkgconfig(libzip) >= 1.0.0
 BuildRequires: zlib-devel
@@ -50,6 +52,7 @@ sed -e 's/role="test"/role="src"/' \
     -i package.xml
 
 cd %{pecl_name}-%{version}
+%patch0 -p1 -b .upstream
 
 # Sanity check, really often broken
 extver=$(sed -n '/#define PHP_ZIP_VERSION/{s/.* "//;s/".*$//;p}' php5/php_zip.h)
