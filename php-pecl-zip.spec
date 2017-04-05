@@ -1,6 +1,6 @@
 # Fedora spec file for php-pecl-zip
 #
-# Copyright (c) 2013-2016 Remi Collet
+# Copyright (c) 2013-2017 Remi Collet
 # License: CC-BY-SA
 # http://creativecommons.org/licenses/by-sa/4.0/
 #
@@ -12,15 +12,13 @@
 Summary:      A ZIP archive management extension
 Summary(fr):  Une extension de gestion des ZIP
 Name:         php-pecl-zip
-Version:      1.13.5
-Release:      4%{?dist}
+Version:      1.14.0
+Release:      1%{?dist}
 License:      PHP
 Group:        Development/Languages
 URL:          http://pecl.php.net/package/zip
 
 Source:       http://pecl.php.net/get/%{pecl_name}-%{version}.tgz
-
-Patch0:       %{pecl_name}-upstream.patch
 
 BuildRequires: php-devel
 BuildRequires: pkgconfig(libzip) >= 1.0.0
@@ -52,18 +50,12 @@ sed -e 's/role="test"/role="src"/' \
     -i package.xml
 
 cd %{pecl_name}-%{version}
-%patch0 -p1 -b .upstream
-
 # Sanity check, really often broken
 extver=$(sed -n '/#define PHP_ZIP_VERSION/{s/.* "//;s/".*$//;p}' php5/php_zip.h)
 if test "x${extver}" != "x%{version}%{?prever}"; then
    : Error: Upstream extension version is ${extver}, expecting %{version}%{?prever}.
    exit 1
 fi
-
-sed -e '/LICENSE_libzip/d' -i ../package.xml
-# delete bundled libzip to ensure it is not used
-rm -r lib
 
 cd ..
 : Create the configuration file
@@ -156,6 +148,9 @@ TEST_PHP_EXECUTABLE=%{_bindir}/zts-php \
 
 
 %changelog
+* Wed Apr  5 2017 Remi Collet <remi@remirepo.net> - 1.14.0-1
+- Update to 1.14.0
+
 * Tue Feb 28 2017 Remi Collet <remi@fedoraproject.org> - 1.13.5-4
 - rebuild for new libzip
 
