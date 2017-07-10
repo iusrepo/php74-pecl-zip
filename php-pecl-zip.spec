@@ -12,7 +12,7 @@
 Summary:      A ZIP archive management extension
 Summary(fr):  Une extension de gestion des ZIP
 Name:         php-pecl-zip
-Version:      1.14.0
+Version:      1.15.0
 Release:      1%{?dist}
 License:      PHP
 Group:        Development/Languages
@@ -109,8 +109,7 @@ done
 cd %{pecl_name}-%{version}
 : minimal load test of NTS extension
 %{_bindir}/php --no-php-ini \
-    --define extension_dir=modules \
-    --define extension=%{pecl_name}.so \
+    --define extension=%{buildroot}%{php_extdir}/%{pecl_name}.so \
     --modules | grep %{pecl_name}
 
 : upstream test suite for NTS extension
@@ -123,8 +122,7 @@ TEST_PHP_EXECUTABLE=%{_bindir}/php \
 cd ../%{pecl_name}-zts
 : minimal load test of ZTS extension
 %{_bindir}/zts-php --no-php-ini \
-    --define extension_dir=modules \
-    --define extension=%{pecl_name}.so \
+    --define extension=%{buildroot}%{php_ztsextdir}/%{pecl_name}.so \
     --modules | grep %{pecl_name}
 
 : upstream test suite for ZTS extension
@@ -148,6 +146,9 @@ TEST_PHP_EXECUTABLE=%{_bindir}/zts-php \
 
 
 %changelog
+* Mon Jul 10 2017 Remi Collet <remi@remirepo.net> - 1.15.0-1
+- Update to 1.15.0
+
 * Wed Apr  5 2017 Remi Collet <remi@remirepo.net> - 1.14.0-1
 - Update to 1.14.0
 
