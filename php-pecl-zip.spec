@@ -12,8 +12,8 @@
 Summary:      A ZIP archive management extension
 Summary(fr):  Une extension de gestion des ZIP
 Name:         php-pecl-zip
-Version:      1.15.1
-Release:      4%{?dist}
+Version:      1.15.2
+Release:      1%{?dist}
 License:      PHP
 Group:        Development/Languages
 URL:          http://pecl.php.net/package/zip
@@ -146,6 +146,9 @@ TEST_PHP_EXECUTABLE=%{_bindir}/zts-php \
 
 
 %changelog
+* Tue Dec 19 2017 Remi Collet <remi@fedoraproject.org> - 1.15.2-1
+- Update to 1.15.2
+
 * Tue Oct 03 2017 Remi Collet <remi@fedoraproject.org> - 1.15.1-4
 - rebuild for https://fedoraproject.org/wiki/Changes/php72
 
