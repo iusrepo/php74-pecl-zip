@@ -1,11 +1,15 @@
 # Fedora spec file for php-pecl-zip
 #
-# Copyright (c) 2013-2017 Remi Collet
+# Copyright (c) 2013-2018 Remi Collet
 # License: CC-BY-SA
 # http://creativecommons.org/licenses/by-sa/4.0/
 #
 # Please, preserve the changelog entries
 #
+
+# we don't want -z defs linker flag
+%undefine _strict_symbol_defs_build
+
 %global pecl_name zip
 %global ini_name  40-%{pecl_name}.ini
 
@@ -13,7 +17,7 @@ Summary:      A ZIP archive management extension
 Summary(fr):  Une extension de gestion des ZIP
 Name:         php-pecl-zip
 Version:      1.15.2
-Release:      1%{?dist}
+Release:      2%{?dist}
 License:      PHP
 Group:        Development/Languages
 URL:          http://pecl.php.net/package/zip
@@ -146,6 +150,9 @@ TEST_PHP_EXECUTABLE=%{_bindir}/zts-php \
 
 
 %changelog
+* Fri Jan 26 2018 Remi Collet <remi@remirepo.net> - 1.15.2-2
+- undefine _strict_symbol_defs_build
+
 * Tue Dec 19 2017 Remi Collet <remi@fedoraproject.org> - 1.15.2-1
 - Update to 1.15.2
 
