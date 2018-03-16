@@ -11,6 +11,7 @@
 %undefine _strict_symbol_defs_build
 
 %global pecl_name zip
+%global with_zts  0%{?__ztsphp:1}
 %global ini_name  40-%{pecl_name}.ini
 
 Summary:      A ZIP archive management extension
@@ -68,8 +69,10 @@ cat >%{ini_name} << 'EOF'
 extension=%{pecl_name}.so
 EOF
 
+%if %{with_zts}
 : Duplicate sources tree for ZTS build
 cp -pr %{pecl_name}-%{version} %{pecl_name}-zts
+%endif
 
 
 %build
@@ -82,6 +85,7 @@ cd %{pecl_name}-%{version}
 
 make %{?_smp_mflags}
 
+%if %{with_zts}
 cd ../%{pecl_name}-zts
 %{_bindir}/zts-phpize
 %configure \
@@ -90,6 +94,7 @@ cd ../%{pecl_name}-zts
   --with-php-config=%{_bindir}/zts-php-config
 
 make %{?_smp_mflags}
+%endif
 
 
 %install
@@ -99,8 +104,10 @@ install -D -m 644 %{ini_name} %{buildroot}%{php_inidir}/%{ini_name}
 # Install XML package description
 install -D -m 644 package.xml %{buildroot}%{pecl_xmldir}/%{name}.xml
 
+%if %{with_zts}
 make -C %{pecl_name}-zts install INSTALL_ROOT=%{buildroot}
 install -D -m 644 %{ini_name} %{buildroot}%{php_ztsinidir}/%{ini_name}
+%endif
 
 # Documentation
 cd %{pecl_name}-%{version}
@@ -123,6 +130,7 @@ NO_INTERACTION=1 \
 TEST_PHP_EXECUTABLE=%{_bindir}/php \
 %{_bindir}/php -n run-tests.php
 
+%if %{with_zts}
 cd ../%{pecl_name}-zts
 : minimal load test of ZTS extension
 %{_bindir}/zts-php --no-php-ini \
@@ -135,6 +143,7 @@ REPORT_EXIT_STATUS=1 \
 NO_INTERACTION=1 \
 TEST_PHP_EXECUTABLE=%{_bindir}/zts-php \
 %{_bindir}/zts-php -n run-tests.php
+%endif
 
 
 %files
@@ -145,8 +154,10 @@ TEST_PHP_EXECUTABLE=%{_bindir}/zts-php \
 %config(noreplace) %{php_inidir}/%{ini_name}
 %{php_extdir}/%{pecl_name}.so
 
+%if %{with_zts}
 %config(noreplace) %{php_ztsinidir}/%{ini_name}
 %{php_ztsextdir}/%{pecl_name}.so
+%endif
 
 
 %changelog
