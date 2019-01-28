@@ -20,7 +20,6 @@ Name:         php-pecl-zip
 Version:      1.15.4
 Release:      2%{?dist}
 License:      PHP
-Group:        Development/Languages
 URL:          http://pecl.php.net/package/zip
 
 Source:       http://pecl.php.net/get/%{pecl_name}-%{version}.tgz
