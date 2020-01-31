@@ -17,7 +17,7 @@
 Summary:      A ZIP archive management extension
 Summary(fr):  Une extension de gestion des ZIP
 Name:         php-pecl-zip
-Version:      1.16.1
+Version:      1.17.0
 Release:      1%{?dist}
 License:      PHP
 URL:          http://pecl.php.net/package/zip
@@ -160,6 +160,9 @@ TEST_PHP_EXECUTABLE=%{_bindir}/zts-php \
 
 
 %changelog
+* Fri Jan 31 2020 Remi Collet <remi@remirepo.net> - 1.17.0-1
+- Update to 1.17.0
+
 * Wed Jan 29 2020 Remi Collet <remi@remirepo.net> - 1.16.1-1
 - Update to 1.16.1
 
