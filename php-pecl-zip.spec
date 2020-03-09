@@ -14,15 +14,18 @@
 %global with_zts  0%{?__ztsphp:1}
 %global ini_name  40-%{pecl_name}.ini
 
+%global upstream_version 1.18.0
+%global upstream_prever  RC6
+
 Summary:      A ZIP archive management extension
 Summary(fr):  Une extension de gestion des ZIP
 Name:         php-pecl-zip
-Version:      1.17.2
+Version:      %{upstream_version}%{?upstream_prever:~%{upstream_prever}}
 Release:      1%{?dist}
 License:      PHP
 URL:          https://pecl.php.net/package/zip
 
-Source:       https://pecl.php.net/get/%{pecl_name}-%{version}.tgz
+Source0:      https://pecl.php.net/get/%{pecl_name}-%{upstream_version}%{?upstream_prever}.tgz
 
 BuildRequires: php-devel
 BuildRequires: pkgconfig(libzip) >= 1.0.0
@@ -47,17 +50,18 @@ Zip est une extension pour créer et lire les archives au format ZIP.
 
 %prep 
 %setup -c -q
+mv %{pecl_name}-%{upstream_version}%{?upstream_prever} NTS
 
 # Don't install/register tests
 sed -e 's/role="test"/role="src"/' \
     -e '/LICENSE/s/role="doc"/role="src"/' \
     -i package.xml
 
-cd %{pecl_name}-%{version}
+cd NTS
 # Sanity check, really often broken
 extver=$(sed -n '/#define PHP_ZIP_VERSION/{s/.* "//;s/".*$//;p}' php5/php_zip.h)
-if test "x${extver}" != "x%{version}%{?prever}"; then
-   : Error: Upstream extension version is ${extver}, expecting %{version}%{?prever}.
+if test "x${extver}" != "x%{upstream_version}%{?upstream_prever}"; then
+   : Error: Upstream extension version is ${extver}, expecting %{upstream_version}%{?upstream_prever}.
    exit 1
 fi
 
@@ -70,12 +74,12 @@ EOF
 
 %if %{with_zts}
 : Duplicate sources tree for ZTS build
-cp -pr %{pecl_name}-%{version} %{pecl_name}-zts
+cp -pr NTS ZTS
 %endif
 
 
 %build
-cd %{pecl_name}-%{version}
+cd NTS
 %{_bindir}/phpize
 %configure \
   --with-libzip \
@@ -85,7 +89,7 @@ cd %{pecl_name}-%{version}
 make %{?_smp_mflags}
 
 %if %{with_zts}
-cd ../%{pecl_name}-zts
+cd ../ZTS
 %{_bindir}/zts-phpize
 %configure \
   --with-libzip \
@@ -97,26 +101,26 @@ make %{?_smp_mflags}
 
 
 %install
-make -C %{pecl_name}-%{version} install INSTALL_ROOT=%{buildroot}
+make -C NTS install INSTALL_ROOT=%{buildroot}
 install -D -m 644 %{ini_name} %{buildroot}%{php_inidir}/%{ini_name}
 
 # Install XML package description
 install -D -m 644 package.xml %{buildroot}%{pecl_xmldir}/%{name}.xml
 
 %if %{with_zts}
-make -C %{pecl_name}-zts install INSTALL_ROOT=%{buildroot}
+make -C ZTS install INSTALL_ROOT=%{buildroot}
 install -D -m 644 %{ini_name} %{buildroot}%{php_ztsinidir}/%{ini_name}
 %endif
 
 # Documentation
-cd %{pecl_name}-%{version}
+cd NTS
 for i in $(grep 'role="doc"' ../package.xml | sed -e 's/^.*name="//;s/".*$//')
 do install -Dpm 644 $i %{buildroot}%{pecl_docdir}/%{pecl_name}/$i
 done
 
 
 %check
-cd %{pecl_name}-%{version}
+cd NTS
 : minimal load test of NTS extension
 %{_bindir}/php --no-php-ini \
     --define extension=%{buildroot}%{php_extdir}/%{pecl_name}.so \
@@ -130,7 +134,7 @@ TEST_PHP_EXECUTABLE=%{_bindir}/php \
 %{_bindir}/php -n run-tests.php
 
 %if %{with_zts}
-cd ../%{pecl_name}-zts
+cd ../ZTS
 : minimal load test of ZTS extension
 %{_bindir}/zts-php --no-php-ini \
     --define extension=%{buildroot}%{php_ztsextdir}/%{pecl_name}.so \
@@ -146,7 +150,7 @@ TEST_PHP_EXECUTABLE=%{_bindir}/zts-php \
 
 
 %files
-%license %{pecl_name}-%{version}/LICENSE
+%license NTS/LICENSE
 %doc %{pecl_docdir}/%{pecl_name}
 %{pecl_xmldir}/%{name}.xml
 
@@ -160,6 +164,9 @@ TEST_PHP_EXECUTABLE=%{_bindir}/zts-php \
 
 
 %changelog
+* Mon Mar  9 2020 Remi Collet <remi@remirepo.net> - 1.18.0~RC6-1
+- update to 1.18.0RC6
+
 * Fri Feb 28 2020 Remi Collet <remi@remirepo.net> - 1.17.2-1
 - Update to 1.17.2
 
