@@ -15,7 +15,7 @@
 %global ini_name  40-%{pecl_name}.ini
 
 %global upstream_version 1.18.0
-%global upstream_prever  RC6
+#global upstream_prever  RC6
 
 Summary:      A ZIP archive management extension
 Summary(fr):  Une extension de gestion des ZIP
@@ -164,6 +164,9 @@ TEST_PHP_EXECUTABLE=%{_bindir}/zts-php \
 
 
 %changelog
+* Mon Mar 16 2020 Remi Collet <remi@remirepo.net> - 1.18.0-1
+- update to 1.18.0
+
 * Mon Mar  9 2020 Remi Collet <remi@remirepo.net> - 1.18.0~RC6-1
 - update to 1.18.0RC6
 
