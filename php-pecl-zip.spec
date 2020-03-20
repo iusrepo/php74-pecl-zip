@@ -14,7 +14,7 @@
 %global with_zts  0%{?__ztsphp:1}
 %global ini_name  40-%{pecl_name}.ini
 
-%global upstream_version 1.18.1
+%global upstream_version 1.18.2
 #global upstream_prever  RC6
 
 Summary:      A ZIP archive management extension
@@ -164,6 +164,9 @@ TEST_PHP_EXECUTABLE=%{_bindir}/zts-php \
 
 
 %changelog
+* Fri Mar 20 2020 Remi Collet <remi@remirepo.net> - 1.18.2-1
+- update to 1.18.2
+
 * Thu Mar 19 2020 Remi Collet <remi@remirepo.net> - 1.18.1-1
 - update to 1.18.1
 
