@@ -1,3 +1,5 @@
+# IUS spec file for php74-pecl-zip, forked from:
+#
 # Fedora spec file for php-pecl-zip
 #
 # Copyright (c) 2013-2020 Remi Collet
@@ -13,13 +15,14 @@
 %global pecl_name zip
 %global with_zts  0%{?__ztsphp:1}
 %global ini_name  40-%{pecl_name}.ini
+%global php       php74
 
 %global upstream_version 1.18.2
 #global upstream_prever  RC6
 
 Summary:      A ZIP archive management extension
 Summary(fr):  Une extension de gestion des ZIP
-Name:         php-pecl-zip
+Name:         %{php}-pecl-zip
 Version:      %{upstream_version}%{?upstream_prever:~%{upstream_prever}}
 Release:      1%{?dist}
 License:      PHP
@@ -27,10 +30,11 @@ URL:          https://pecl.php.net/package/zip
 
 Source0:      https://pecl.php.net/get/%{pecl_name}-%{upstream_version}%{?upstream_prever}.tgz
 
-BuildRequires: php-devel
+BuildRequires: %{php}-devel
 BuildRequires: pkgconfig(libzip) >= 1.0.0
 BuildRequires: zlib-devel
-BuildRequires: php-pear
+# build require pear1's dependencies to avoid mismatched php stacks
+BuildRequires: pear1 %{php}-cli %{php}-common %{php}-xml
 
 Requires:     php(zend-abi) = %{php_zend_api}
 Requires:     php(api) = %{php_core_api}
@@ -40,6 +44,10 @@ Provides:     php-pecl(%{pecl_name})%{?_isa} = %{version}
 Provides:     php-%{pecl_name} = %{version}-%{release}
 Provides:     php-%{pecl_name}%{?_isa} = %{version}-%{release}
 
+# safe replacement
+Provides:      php-pecl-%{pecl_name} = %{version}-%{release}
+Provides:      php-pecl-%{pecl_name}%{?_isa} = %{version}-%{release}
+Conflicts:     php-pecl-%{pecl_name} < %{version}-%{release}
 
 %description
 Zip is an extension to create and read zip files.
@@ -105,7 +113,7 @@ make -C NTS install INSTALL_ROOT=%{buildroot}
 install -D -m 644 %{ini_name} %{buildroot}%{php_inidir}/%{ini_name}
 
 # Install XML package description
-install -D -m 644 package.xml %{buildroot}%{pecl_xmldir}/%{name}.xml
+install -Dpm 644 package.xml %{buildroot}%{pecl_xmldir}/%{pecl_name}.xml
 
 %if %{with_zts}
 make -C ZTS install INSTALL_ROOT=%{buildroot}
@@ -149,10 +157,28 @@ TEST_PHP_EXECUTABLE=%{_bindir}/zts-php \
 %endif
 
 
+%triggerin -- pear1
+if [ -x %{__pecl} ]; then
+    %{pecl_install} %{pecl_xmldir}/%{pecl_name}.xml >/dev/null || :
+fi
+
+
+%posttrans
+if [ -x %{__pecl} ]; then
+    %{pecl_install} %{pecl_xmldir}/%{pecl_name}.xml >/dev/null || :
+fi
+
+
+%postun
+if [ $1 -eq 0 -a -x %{__pecl} ]; then
+    %{pecl_uninstall} %{pecl_name} >/dev/null || :
+fi
+
+
 %files
 %license NTS/LICENSE
 %doc %{pecl_docdir}/%{pecl_name}
-%{pecl_xmldir}/%{name}.xml
+%{pecl_xmldir}/%{pecl_name}.xml
 
 %config(noreplace) %{php_inidir}/%{ini_name}
 %{php_extdir}/%{pecl_name}.so
@@ -164,6 +190,9 @@ TEST_PHP_EXECUTABLE=%{_bindir}/zts-php \
 
 
 %changelog
+* Tue Apr 28 2020 David Alger <davidmalger@gmail.com> - 1.18.2-1
+- Port from Fedora to IUS
+
 * Fri Mar 20 2020 Remi Collet <remi@remirepo.net> - 1.18.2-1
 - update to 1.18.2
 
