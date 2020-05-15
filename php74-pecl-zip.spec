@@ -139,7 +139,7 @@ TEST_PHP_ARGS="-n -d extension_dir=$PWD/modules -d extension=%{pecl_name}.so" \
 REPORT_EXIT_STATUS=1 \
 NO_INTERACTION=1 \
 TEST_PHP_EXECUTABLE=%{_bindir}/php \
-%{_bindir}/php -n run-tests.php
+%{_bindir}/php -n run-tests.php --show-diff
 
 %if %{with_zts}
 cd ../ZTS
@@ -153,7 +153,7 @@ TEST_PHP_ARGS="-n -d extension_dir=$PWD/modules -d extension=%{pecl_name}.so" \
 REPORT_EXIT_STATUS=1 \
 NO_INTERACTION=1 \
 TEST_PHP_EXECUTABLE=%{_bindir}/zts-php \
-%{_bindir}/zts-php -n run-tests.php
+%{_bindir}/zts-php -n run-tests.php --show-diff
 %endif
 
 
