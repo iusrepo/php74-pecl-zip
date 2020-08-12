@@ -17,7 +17,7 @@
 %global ini_name  40-%{pecl_name}.ini
 %global php       php74
 
-%global upstream_version 1.18.2
+%global upstream_version 1.19.0
 #global upstream_prever  RC6
 
 Summary:      A ZIP archive management extension
@@ -190,6 +190,9 @@ fi
 
 
 %changelog
+* Wed Aug 12 2020 Jeff Sheltren <jeff@sheltren.com> - 1.19.0-1
+- Update to 1.19.0
+
 * Tue Apr 28 2020 David Alger <davidmalger@gmail.com> - 1.18.2-1
 - Port from Fedora to IUS
 
