@@ -17,7 +17,7 @@
 %global ini_name  40-%{pecl_name}.ini
 %global php       php74
 
-%global upstream_version 1.19.0
+%global upstream_version 1.19.1
 #global upstream_prever  RC6
 
 Summary:      A ZIP archive management extension
@@ -67,7 +67,7 @@ sed -e 's/role="test"/role="src"/' \
 
 cd NTS
 # Sanity check, really often broken
-extver=$(sed -n '/#define PHP_ZIP_VERSION/{s/.* "//;s/".*$//;p}' php5/php_zip.h)
+extver=$(sed -n '/#define PHP_ZIP_VERSION/{s/.* "//;s/".*$//;p}' php7/php_zip.h)
 if test "x${extver}" != "x%{upstream_version}%{?upstream_prever}"; then
    : Error: Upstream extension version is ${extver}, expecting %{upstream_version}%{?upstream_prever}.
    exit 1
@@ -190,6 +190,9 @@ fi
 
 
 %changelog
+* Wed Sep 30 2020 Remi Collet <remi@remirepo.net> - 1.19.1-1
+- update to 1.19.1
+
 * Wed Aug 12 2020 Jeff Sheltren <jeff@sheltren.com> - 1.19.0-1
 - Update to 1.19.0
 
