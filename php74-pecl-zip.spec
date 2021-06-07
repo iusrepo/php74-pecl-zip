@@ -17,7 +17,7 @@
 %global ini_name  40-%{pecl_name}.ini
 %global php       php74
 
-%global upstream_version 1.19.2
+%global upstream_version 1.19.3
 #global upstream_prever  RC6
 
 Summary:      A ZIP archive management extension
@@ -190,6 +190,9 @@ fi
 
 
 %changelog
+* Mon Jun 7 2020 Remi Collet <remi@remirepo.net> - 1.19.3-1
+- update to 1.19.3
+
 * Mon Nov 23 2020 Remi Collet <remi@remirepo.net> - 1.19.2-1
 - update to 1.19.2
 
