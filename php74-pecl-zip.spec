@@ -17,7 +17,7 @@
 %global ini_name  40-%{pecl_name}.ini
 %global php       php74
 
-%global upstream_version 1.19.4
+%global upstream_version 1.20.0
 #global upstream_prever  RC6
 
 Summary:      A ZIP archive management extension
@@ -136,10 +136,8 @@ cd NTS
 
 : upstream test suite for NTS extension
 TEST_PHP_ARGS="-n -d extension_dir=$PWD/modules -d extension=%{pecl_name}.so" \
-REPORT_EXIT_STATUS=1 \
-NO_INTERACTION=1 \
 TEST_PHP_EXECUTABLE=%{_bindir}/php \
-%{_bindir}/php -n run-tests.php --show-diff
+%{_bindir}/php -n run-tests.php -q --show-diff %{?_smp_mflags}
 
 %if %{with_zts}
 cd ../ZTS
@@ -150,10 +148,8 @@ cd ../ZTS
 
 : upstream test suite for ZTS extension
 TEST_PHP_ARGS="-n -d extension_dir=$PWD/modules -d extension=%{pecl_name}.so" \
-REPORT_EXIT_STATUS=1 \
-NO_INTERACTION=1 \
 TEST_PHP_EXECUTABLE=%{_bindir}/zts-php \
-%{_bindir}/zts-php -n run-tests.php --show-diff
+%{_bindir}/zts-php -n run-tests.php -q --show-diff %{?_smp_mflags}
 %endif
 
 
@@ -190,6 +186,10 @@ fi
 
 
 %changelog
+* Tue Oct 12 2021 Remi Collet <remi@remirepo.net> - 1.20.0-1
+- update to 1.20.0
+- run test suite in parallel
+
 * Wed Sep  1 2021 Remi Collet <remi@remirepo.net> - 1.19.4-1
 - update to 1.19.4
 
