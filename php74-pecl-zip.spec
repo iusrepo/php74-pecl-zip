@@ -2,7 +2,7 @@
 #
 # Fedora spec file for php-pecl-zip
 #
-# Copyright (c) 2013-2020 Remi Collet
+# Copyright (c) 2013-2022 Remi Collet
 # License: CC-BY-SA
 # http://creativecommons.org/licenses/by-sa/4.0/
 #
@@ -17,7 +17,7 @@
 %global ini_name  40-%{pecl_name}.ini
 %global php       php74
 
-%global upstream_version 1.20.0
+%global upstream_version 1.20.1
 #global upstream_prever  RC6
 
 Summary:      A ZIP archive management extension
@@ -186,6 +186,9 @@ fi
 
 
 %changelog
+* Mon May  2 2022 Remi Collet <remi@remirepo.net> - 1.20.1-1
+- update to 1.20.1
+
 * Tue Oct 12 2021 Remi Collet <remi@remirepo.net> - 1.20.0-1
 - update to 1.20.0
 - run test suite in parallel
