@@ -137,7 +137,7 @@ cd NTS
 : upstream test suite for NTS extension
 TEST_PHP_ARGS="-n -d extension_dir=$PWD/modules -d extension=%{pecl_name}.so" \
 TEST_PHP_EXECUTABLE=%{_bindir}/php \
-%{_bindir}/php -n run-tests.php -q --show-diff %{?_smp_mflags}
+%{_bindir}/php -n run-tests.php -q --show-diff
 
 %if %{with_zts}
 cd ../ZTS
@@ -149,7 +149,7 @@ cd ../ZTS
 : upstream test suite for ZTS extension
 TEST_PHP_ARGS="-n -d extension_dir=$PWD/modules -d extension=%{pecl_name}.so" \
 TEST_PHP_EXECUTABLE=%{_bindir}/zts-php \
-%{_bindir}/zts-php -n run-tests.php -q --show-diff %{?_smp_mflags}
+%{_bindir}/zts-php -n run-tests.php -q --show-diff
 %endif
 
 
